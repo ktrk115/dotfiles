@@ -148,10 +148,14 @@ endif
 "insert here your Neobundle plugins"
 NeoBundle 'scrooloose/nerdtree'
 NeoBundle 'junegunn/vim-easy-align'
+NeoBundle 'scrooloose/syntastic'
 call neobundle#end()
 
 filetype plugin indent on
 nnoremap <silent><C-e> :NERDTreeToggle<CR>
+
+" pythonの文法チェック
+let g:syntastic_python_checkers = ['pyflakes', 'pep8']
 
 " カーソル変更
 let &t_SI = "\e]50;CursorShape=1\x7"
