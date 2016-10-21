@@ -119,7 +119,7 @@ nnoremap <silent><Esc><Esc> :<C-u>set nohlsearch!<CR>
 " カーソル
 "----------------------------------------------------------
 set whichwrap=b,s,h,l,<,>,[,],~ " カーソルの左右移動で行末から次の行の行頭への移動が可能になる
-set number " 行番号を表示
+" set number " 行番号を表示
 set cursorline " カーソルラインをハイライト
 
 " 行が折り返し表示されていた場合、行単位ではなく表示行単位でカーソルを移動する
@@ -205,11 +205,12 @@ let g:syntastic_check_on_open = 1
 " 「:wq」で終了する時も構文エラーチェックする
 let g:syntastic_check_on_wq = 1
 
-" Javascript用. 構文エラーチェックにESLintを使用
-let g:syntastic_javascript_checkers=['eslint']
-" Javascript以外は構文エラーチェックをしない
+" Python用. 構文エラーチェックにPEP8を使用
+let g:syntastic_python_checkers = ['pep8']
+
+" Python以外は構文エラーチェックをしない
 let g:syntastic_mode_map = { 'mode': 'passive',
-                           \ 'active_filetypes': ['javascript'],
+                           \ 'active_filetypes': ['python'],
                            \ 'passive_filetypes': [] }
 
 "----------------------------------------------------------
