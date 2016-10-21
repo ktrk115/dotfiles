@@ -1,175 +1,232 @@
-" vim-slim syntax
-" set rtp+=~/.vim/bundle/vundle/
-" call vundle#rc()
+set encoding=utf-8
+scriptencoding utf-8
+" ↑1行目は読み込み時の文字コードの設定
+" ↑2行目はVim Script内でマルチバイトを使う場合の設定
+" Vim scritptにvimrcも含まれるので、日本語でコメントを書く場合は先頭にこの設定が必要になる
 
-" Bundle 'slim-template/vim-slim.git'
-" syntax enable
-" filetype plugin indent on
-
-syntax on
-
-" カーソル行をハイライト
-set cursorline
-hi cursorline term=reverse cterm=none ctermbg=232 ctermfg=NONE
-hi Cursor guifg=black ctermfg=black ctermbg=black
-hi Comment ctermfg=27
-
-"カレントウィンドウにのみ罫線を引く
-augroup cch
-autocmd! cch
-" autocmd WinLeave * set nocursorline
-" autocmd WinEnter,BufRead * set cursorline
-augroup END
-
-set enc=utf-8
-set fileencodings=utf-8,iso-2022-jp,sjis,euc-jp
-"set fencs=iso-2022-jp,euc-jp,cp932
-set ambiwidth=double
-
-"インデント関連
-set autoindent
-set cindent
-set tabstop=2
-set shiftwidth=2
-set noexpandtab
-set nopaste
-
-" 表示関連
-set number
-set ruler
-set nolist
-set noshowmatch
-let loaded_matchparen = 1
-set wrap
-set title
-set showcmd
-set cmdheight=2
-set laststatus=2
-set statusline=%<%f\ %m%r%h%w%{'['.(&fenc!=''?&fenc:&enc).']['.&ff.']'}
-set wildmenu
-set fileformats=unix,dos,mac
-
-set backspace=2
-set scrolloff=5
-set formatoptions+=mM
-let format_join_spaces = 4
-let format_allow_over_tw = 1
-set nobackup
-set history=1000
-set mouse=a
-set clipboard+=unnamed
-
-set iminsert=0
-set imsearch=0
-set imdisable
-set iminsert=1
-set imsearch=1
-
-filetype plugin indent on
-highlight Search term=reverse ctermbg=DarkBlue ctermfg=NONE
-autocmd FileType ruby set tabstop=2 tw=0 sw=2 expandtab
-autocmd FileType eruby set tabstop=2 tw=0 sw=2 expandtab
-autocmd BufNewFile,BufRead app/*/*.rhtml set ft=mason fenc=utf-8
-autocmd BufNewFile,BufRead app/**/*.rb set ft=ruby fenc=utf-8
-autocmd BufNewFile,BufRead app/**/*.yml set ft=ruby fenc=utf-8
-autocmd BufNewFile,BufRead *.cap set ft=ruby fenc=utf-8
-autocmd BufNewFile,BufRead *.rabl set ft=ruby fenc=utf-8
-au BufRead,BufNewFile,BufReadPre *.coffee   set filetype=coffee
-autocmd FileType c hi Comment ctermfg=darkcyan
-autocmd FileType cpp hi Comment ctermfg=darkcyan
-autocmd FileType coffee setlocal sw=2 sts=2 ts=2 et
-
-" 挿入モードの時に、コントロールを押しながらj, k, b, lで移動が可能になる
-inoremap <C-j> <Down>
-inoremap <C-k> <Up>
-inoremap <C-b> <Left>
-inoremap <C-f> <Right>
-inoremap <C-l> <Right>
-inoremap <C-d> <Right><ESC>xi
-inoremap <C-o> <ESC>o
-
-" 検索関連
-set ignorecase
-set wrapscan
-set incsearch
-set hlsearch
-
-nnoremap n nzz
-nnoremap N Nzz
-nnoremap * *zz
-nnoremap # #zz
-nnoremap g* g*zz
-
-" Enterを押した時に改行+挿入
-nnoremap <S-Enter> O<ESC>
-nnoremap <Enter> o<ESC>
-
-nnoremap <Space>.  :<C-u>edit $MYVIMRC<CR>
-nnoremap <Space>,  :<C-u>source $MYVIMRC<CR>
-
-" q(一連の操作の記録)を間違えて押してことが多いので
-" qqqと３回押して初めて操作記録ができるようにする。
-nnoremap qqq: <Esc>q:
-nnoremap qqq/ <Esc>q/
-nnoremap qqq? <Esc>q?
-nnoremap q: <Nop>
-nnoremap q/ <Nop>
-nnoremap q? <Nop>
-
-" NERD Commenter
-" コメントアウトに関する便利なプラグイン 
-" https://github.com/scrooloose/nerdcommenter Installationを参考に
-let NERDSpaceDelims = 1
-let NERDShutUp = 1
-let mapleader = ','
-nmap ,, <Plug>NERDCommenterToggle
-vmap ,, <Plug>NERDCommenterToggle
-
-""""""""""""""""""""""""""""""""
-" 最後のカーソル位置を復元する
-""""""""""""""""""""""""""""""""
-  if has("autocmd")
-       autocmd BufReadPost *
-                \ if line("'\"") > 0 && line ("'\"") <= line("$") |
-    \   exe "normal! g'\"" |
-    \ endif
-endif
-"""""""""""""""""""""""""""""""
-
-" NERDTree setting
-set nocompatible
-filetype off
-
+"----------------------------------------------------------
+" NeoBundle
+"----------------------------------------------------------
 if has('vim_starting')
-	set runtimepath+=~/.vim/bundle/neobundle.vim
-	call neobundle#begin(expand('~/.vim/bundle/'))
+    " 初回起動時のみruntimepathにNeoBundleのパスを指定する
+    set runtimepath+=~/.vim/bundle/neobundle.vim/
+
+    " NeoBundleが未インストールであればgit cloneする
+    if !isdirectory(expand("~/.vim/bundle/neobundle.vim/"))
+        echo "install NeoBundle..."
+        :call system("git clone git://github.com/Shougo/neobundle.vim ~/.vim/bundle/neobundle.vim")
+    endif
 endif
 
-"insert here your Neobundle plugins"
-NeoBundle 'scrooloose/nerdtree'
-NeoBundle 'junegunn/vim-easy-align'
+call neobundle#begin(expand('~/.vim/bundle/'))
+
+" インストールするVimプラグインを以下に記述
+" NeoBundle自身を管理
+NeoBundleFetch 'Shougo/neobundle.vim'
+" カラースキームmolokai
+NeoBundle 'tomasr/molokai'
+" ステータスラインの表示内容強化
+NeoBundle 'itchyny/lightline.vim'
+" インデントの可視化
+NeoBundle 'Yggdroot/indentLine'
+" 末尾の全角半角空白文字を赤くハイライト
+NeoBundle 'bronson/vim-trailing-whitespace'
+" 構文エラーチェック
 NeoBundle 'scrooloose/syntastic'
+" 多機能セレクタ
+NeoBundle 'ctrlpvim/ctrlp.vim'
+" CtrlPの拡張プラグイン. 関数検索
+NeoBundle 'tacahiroy/ctrlp-funky'
+" CtrlPの拡張プラグイン. コマンド履歴検索
+NeoBundle 'suy/vim-ctrlp-commandline'
+" CtrlPの検索にagを使う
+NeoBundle 'rking/ag.vim'
+" プロジェクトに入ってるESLintを読み込む
+NeoBundle 'pmsorhaindo/syntastic-local-eslint.vim'
+
+" vimのlua機能が使える時だけ以下のVimプラグインをインストールする
+if has('lua')
+    " コードの自動補完
+    NeoBundle 'Shougo/neocomplete.vim'
+    " スニペットの補完機能
+    NeoBundle "Shougo/neosnippet"
+    " スニペット集
+    NeoBundle 'Shougo/neosnippet-snippets'
+endif
+
 call neobundle#end()
 
+" ファイルタイプ別のVimプラグイン/インデントを有効にする
 filetype plugin indent on
-nnoremap <silent><C-e> :NERDTreeToggle<CR>
 
-" pythonの文法チェック
-let g:syntastic_python_checkers = ['pyflakes', 'pep8']
+" 未インストールのVimプラグインがある場合、インストールするかどうかを尋ねてくれるようにする設定
+NeoBundleCheck
 
-" カーソル変更
-let &t_SI = "\e]50;CursorShape=1\x7"
-let &t_EI = "\e]50;CursorShape=0\x7"
+"----------------------------------------------------------
+" カラースキーム
+"----------------------------------------------------------
+if neobundle#is_installed('molokai')
+    colorscheme molokai " カラースキームにmolokaiを設定する
+endif
 
-" QFixGrep
-set runtimepath+=~/.vim/qfixapp
-" QuickFixウィンドウでもプレビューや絞り込みを有効化
-let QFixWin_EnableMode = 1
-" QFixHowm/QFixGrepの結果表示にロケーションリストを使用する/しない
-let QFix_UseLocationList = 1
+set t_Co=256 " iTerm2など既に256色環境なら無くても良い
+syntax enable " 構文に色を付ける
 
-" Start interactive EasyAlign in visual mode (e.g. vipga)
-xmap ga <Plug>(EasyAlign)
+"----------------------------------------------------------
+" 文字
+"----------------------------------------------------------
+set fileencoding=utf-8 " 保存時の文字コード
+set fileencodings=ucs-boms,utf-8,euc-jp,cp932 " 読み込み時の文字コードの自動判別. 左側が優先される
+set fileformats=unix,dos,mac " 改行コードの自動判別. 左側が優先される
+set ambiwidth=double " □や○文字が崩れる問題を解決
 
-" Start interactive EasyAlign for a motion/text object (e.g. gaip)
-nmap ga <Plug>(EasyAlign)
+"----------------------------------------------------------
+" ステータスライン
+"----------------------------------------------------------
+set laststatus=2 " ステータスラインを常に表示
+set showmode " 現在のモードを表示
+set showcmd " 打ったコマンドをステータスラインの下に表示
+set ruler " ステータスラインの右側にカーソルの位置を表示する
+
+"----------------------------------------------------------
+" コマンドモード
+"----------------------------------------------------------
+set wildmenu " コマンドモードの補完
+set history=5000 " 保存するコマンド履歴の数
+
+"----------------------------------------------------------
+" タブ・インデント
+"----------------------------------------------------------
+set expandtab " タブ入力を複数の空白入力に置き換える
+set tabstop=4 " 画面上でタブ文字が占める幅
+set softtabstop=4 " 連続した空白に対してタブキーやバックスペースキーでカーソルが動く幅
+set autoindent " 改行時に前の行のインデントを継続する
+set smartindent " 改行時に前の行の構文をチェックし次の行のインデントを増減する
+set shiftwidth=4 " smartindentで増減する幅
+
+"----------------------------------------------------------
+" 文字列検索
+"----------------------------------------------------------
+set incsearch " インクリメンタルサーチ. １文字入力毎に検索を行う
+set ignorecase " 検索パターンに大文字小文字を区別しない
+set smartcase " 検索パターンに大文字を含んでいたら大文字小文字を区別する
+set hlsearch " 検索結果をハイライト
+
+" ESCキー2度押しでハイライトの切り替え
+nnoremap <silent><Esc><Esc> :<C-u>set nohlsearch!<CR>
+
+"----------------------------------------------------------
+" カーソル
+"----------------------------------------------------------
+set whichwrap=b,s,h,l,<,>,[,],~ " カーソルの左右移動で行末から次の行の行頭への移動が可能になる
+set number " 行番号を表示
+set cursorline " カーソルラインをハイライト
+
+" 行が折り返し表示されていた場合、行単位ではなく表示行単位でカーソルを移動する
+nnoremap j gj
+nnoremap k gk
+nnoremap <down> gj
+nnoremap <up> gk
+
+" バックスペースキーの有効化
+set backspace=indent,eol,start
+
+"----------------------------------------------------------
+" カッコ・タグの対応
+"----------------------------------------------------------
+set showmatch " 括弧の対応関係を一瞬表示する
+source $VIMRUNTIME/macros/matchit.vim " Vimの「%」を拡張する
+
+"----------------------------------------------------------
+" マウスでカーソル移動とスクロール
+"----------------------------------------------------------
+if has('mouse')
+    set mouse=a
+    if has('mouse_sgr')
+        set ttymouse=sgr
+    elseif v:version > 703 || v:version is 703 && has('patch632')
+        set ttymouse=sgr
+    else
+        set ttymouse=xterm2
+    endif
+endif
+
+"----------------------------------------------------------
+" クリップボードからのペースト
+"----------------------------------------------------------
+" 挿入モードでクリップボードからペーストする時に自動でインデントさせないようにする
+if &term =~ "xterm"
+    let &t_SI .= "\e[?2004h"
+    let &t_EI .= "\e[?2004l"
+    let &pastetoggle = "\e[201~"
+
+    function XTermPasteBegin(ret)
+        set paste
+        return a:ret
+    endfunction
+
+    inoremap <special> <expr> <Esc>[200~ XTermPasteBegin("")
+endif
+
+"----------------------------------------------------------
+" neocomplete・neosnippetの設定
+"----------------------------------------------------------
+if neobundle#is_installed('neocomplete.vim')
+    " Vim起動時にneocompleteを有効にする
+    let g:neocomplete#enable_at_startup = 1
+    " smartcase有効化. 大文字が入力されるまで大文字小文字の区別を無視する
+    let g:neocomplete#enable_smart_case = 1
+    " 3文字以上の単語に対して補完を有効にする
+    let g:neocomplete#min_keyword_length = 3
+    " 区切り文字まで補完する
+    let g:neocomplete#enable_auto_delimiter = 1
+    " 1文字目の入力から補完のポップアップを表示
+    let g:neocomplete#auto_completion_start_length = 1
+    " バックスペースで補完のポップアップを閉じる
+    inoremap <expr><BS> neocomplete#smart_close_popup()."<C-h>"
+
+    " エンターキーで補完候補の確定. スニペットの展開もエンターキーで確定
+    imap <expr><CR> neosnippet#expandable() ? "<Plug>(neosnippet_expand_or_jump)" : pumvisible() ? "<C-y>" : "<CR>"
+    " タブキーで補完候補の選択. スニペット内のジャンプもタブキーでジャンプ
+    imap <expr><TAB> pumvisible() ? "<C-n>" : neosnippet#jumpable() ? "<Plug>(neosnippet_expand_or_jump)" : "<TAB>"
+endif
+
+"----------------------------------------------------------
+" Syntastic
+"----------------------------------------------------------
+" 構文エラー行に「>>」を表示
+let g:syntastic_enable_signs = 1
+" 他のVimプラグインと競合するのを防ぐ
+let g:syntastic_always_populate_loc_list = 1
+" 構文エラーリストを非表示
+let g:syntastic_auto_loc_list = 0
+" ファイルを開いた時に構文エラーチェックを実行する
+let g:syntastic_check_on_open = 1
+" 「:wq」で終了する時も構文エラーチェックする
+let g:syntastic_check_on_wq = 1
+
+" Javascript用. 構文エラーチェックにESLintを使用
+let g:syntastic_javascript_checkers=['eslint']
+" Javascript以外は構文エラーチェックをしない
+let g:syntastic_mode_map = { 'mode': 'passive',
+                           \ 'active_filetypes': ['javascript'],
+                           \ 'passive_filetypes': [] }
+
+"----------------------------------------------------------
+" CtrlP
+"----------------------------------------------------------
+let g:ctrlp_match_window = 'order:ttb,min:20,max:20,results:100' " マッチウインドウの設定. 「下部に表示, 大きさ20行で固定, 検索結果100件」
+let g:ctrlp_show_hidden = 1 " .(ドット)から始まるファイルも検索対象にする
+let g:ctrlp_types = ['fil'] "ファイル検索のみ使用
+let g:ctrlp_extensions = ['funky', 'commandline'] " CtrlPの拡張として「funky」と「commandline」を使用
+
+" CtrlPCommandLineの有効化
+command! CtrlPCommandLine call ctrlp#init(ctrlp#commandline#id())
+
+" CtrlPFunkyの絞り込み検索設定
+let g:ctrlp_funky_matchtype = 'path'
+
+if executable('ag')
+  let g:ctrlp_use_caching=0 " CtrlPのキャッシュを使わない
+  let g:ctrlp_user_command='ag %s -i --hidden -g ""' " 「ag」の検索設定
+endif
